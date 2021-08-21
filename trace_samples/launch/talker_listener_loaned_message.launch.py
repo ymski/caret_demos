@@ -9,7 +9,7 @@ def generate_launch_description():
     return launch.LaunchDescription([
         Trace(
             session_name='talker_listener_loaned_message',
-            events_kernel=[''],
+            events_kernel=[],
             events_ust=['ros2*']
         ),
         launch_ros.actions.Node(

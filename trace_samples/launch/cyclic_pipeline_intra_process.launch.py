@@ -9,7 +9,8 @@ def generate_launch_description():
     return launch.LaunchDescription([
         Trace(
             session_name='cyclic_pipeline_intra_process',
-            events_kernel=[]
+            events_kernel=[],
+            events_ust=['ros2*']
         ),
         launch_ros.actions.Node(
             package='intra_process_demo',
