@@ -13,5 +13,5 @@ def generate_launch_description():
             events_ust=['ros2*']
         ),
         launch_ros.actions.Node(
-            package='trace_samples', executable='end_to_end_sample', output='screen'),
+            package='caret_demos', executable='end_to_end_sample', output='screen'),
     ])
