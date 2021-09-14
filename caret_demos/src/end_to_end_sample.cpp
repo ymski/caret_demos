@@ -6,7 +6,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
-#define QOS_HISTORY_SIZE 1
+#define QOS_HISTORY_SIZE 10
 
 using namespace std::chrono_literals;
 
@@ -14,11 +14,11 @@ std::chrono::milliseconds lognormal_distribution()
 {
   static std::random_device seed_gen;
   static std::default_random_engine engine(seed_gen());
-  static std::lognormal_distribution<> dist(1.5, 1.7);
-  static double max_latency_ms = 150;
+  static std::lognormal_distribution<> dist(1.4, 1.7);
+  static double max_latency_ms = 70;
 
-  // average is about 15~20ms
-  int sleep_ms = std::min(dist(engine), max_latency_ms);
+  // average is about 25ms
+  int sleep_ms = std::max(std::min(dist(engine), max_latency_ms), 20.0);
   return std::chrono::milliseconds(sleep_ms);
 }
 
