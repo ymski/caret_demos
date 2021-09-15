@@ -10,15 +10,13 @@
 
 using namespace std::chrono_literals;
 
-std::chrono::milliseconds lognormal_distribution()
+std::chrono::milliseconds lognormal_distribution(double max)
 {
   static std::random_device seed_gen;
   static std::default_random_engine engine(seed_gen());
-  static std::lognormal_distribution<> dist(1.4, 1.7);
-  static double max_latency_ms = 70;
+  static std::lognormal_distribution<> dist(1.1, 1.7);
 
-  // average is about 25ms
-  int sleep_ms = std::max(std::min(dist(engine), max_latency_ms), 20.0);
+  int sleep_ms = std::max(std::min(dist(engine), max), 20.0);
   return std::chrono::milliseconds(sleep_ms);
 }
 
@@ -35,7 +33,7 @@ public:
       sub_topic_name, QOS_HISTORY_SIZE,
       [&](sensor_msgs::msg::Image::UniquePtr msg)
       {
-        rclcpp::sleep_for(lognormal_distribution());
+        rclcpp::sleep_for(lognormal_distribution(45));
         msg_ = std::move(msg);
       });
 
@@ -43,7 +41,7 @@ public:
     timer_ = create_wall_timer(
       std::chrono::milliseconds(period_ms), [&]()
       {
-        rclcpp::sleep_for(lognormal_distribution());
+        rclcpp::sleep_for(lognormal_distribution(45));
         if (msg_) {
           pub_->publish(*msg_);
         }
@@ -67,6 +65,7 @@ public:
       sub_topic_name, QOS_HISTORY_SIZE,
       [&](sensor_msgs::msg::Image::UniquePtr msg)
       {
+        rclcpp::sleep_for(lognormal_distribution(80));
         (void)msg;
       }
     );
@@ -86,7 +85,7 @@ public:
     sub_ = create_subscription<sensor_msgs::msg::Image>(
       sub_topic_name, QOS_HISTORY_SIZE, [&](sensor_msgs::msg::Image::UniquePtr msg)
       {
-        rclcpp::sleep_for(lognormal_distribution());
+        rclcpp::sleep_for(lognormal_distribution(200));
         pub_->publish(std::move(msg));
       });
   }
@@ -112,14 +111,14 @@ public:
       {
         auto msg_tmp = std::make_unique<sensor_msgs::msg::Image>();
         msg_tmp->header.stamp = msg->header.stamp;
-        rclcpp::sleep_for(lognormal_distribution());
+        rclcpp::sleep_for(lognormal_distribution(45));
         msg_ = std::move(msg);
       });
     sub2_ = create_subscription<sensor_msgs::msg::Image>(
       subsequent_sub_topic_name, QOS_HISTORY_SIZE, [&](sensor_msgs::msg::Image::UniquePtr msg)
       {
         (void)msg;
-        rclcpp::sleep_for(lognormal_distribution());
+        rclcpp::sleep_for(lognormal_distribution(45));
         if (msg_) {
           pub_->publish(std::move(msg_));
         }
@@ -144,10 +143,11 @@ public:
 
     auto callback = [&]() {
         auto msg = std::make_unique<sensor_msgs::msg::Image>();
+        rclcpp::sleep_for(lognormal_distribution(50));
         msg->header.stamp = now();
         pub_->publish(std::move(msg));
       };
-    pub_ = create_publisher<sensor_msgs::msg::Image>(topic_name, 1);
+    pub_ = create_publisher<sensor_msgs::msg::Image>(topic_name, QOS_HISTORY_SIZE);
     timer_ = create_wall_timer(period, callback);
   }
 
@@ -171,7 +171,7 @@ int main(int argc, char * argv[])
     std::make_shared<SubDependencyNode>("message_driven_node", "/topic2", "/drive", "/topic3"));
   nodes.emplace_back(
     std::make_shared<TimerDependencyNode>("timer_driven_node", "/topic3", "/topic4", 100)); // 10Hz
-  nodes.emplace_back(std::make_shared<SensorDummy>("sensor_dummy_node", "/topic1", 50)); // 20Hz
+  nodes.emplace_back(std::make_shared<SensorDummy>("sensor_dummy_node", "/topic1", 100)); // 10Hz
   nodes.emplace_back(std::make_shared<SensorDummy>("drive_node", "/drive", 100)); // 10Hz
 
   for (auto & node : nodes) {
