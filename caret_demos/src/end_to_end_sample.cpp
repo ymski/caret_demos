@@ -139,6 +139,14 @@ public:
   SensorDummy(std::string node_name, std::string topic_name, int period_ms)
   : Node(node_name)
   {
+    this->declare_parameter<bool>("use_rosbag", false);
+    bool use_rosbag = false;
+    this->get_parameter("use_rosbag", use_rosbag);
+    RCLCPP_INFO(this->get_logger(), "use_rosbag = %d", use_rosbag);
+    if (use_rosbag) {
+      return;
+    }
+
     auto period = std::chrono::milliseconds(period_ms);
 
     auto callback = [&]() {
