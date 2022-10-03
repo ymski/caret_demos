@@ -8,7 +8,7 @@ from tracetools_launch.action import Trace
 def generate_launch_description():
     return launch.LaunchDescription([
         Trace(
-            session_name='end_to_end_sample',
+            session_name='e2e_sample',
             events_kernel=[],
             events_ust=['ros2*']
         ),

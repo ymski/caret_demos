@@ -12,7 +12,7 @@ def generate_launch_description():
         launch.actions.DeclareLaunchArgument("use_sim_time", default_value="false"),
         launch.actions.DeclareLaunchArgument("use_rosbag", default_value="false"),
         Trace(
-            session_name='end_to_end_sample',
+            session_name='e2e_sample',
             events_kernel=[],
             events_ust=['ros2*']
         ),
