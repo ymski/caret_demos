@@ -172,15 +172,15 @@ int main(int argc, char * argv[])
 
   std::vector<std::shared_ptr<rclcpp::Node>> nodes;
 
-  nodes.emplace_back(std::make_shared<ActuatorDummy>("actuator_dummy_node", "/topic4"));
-  // nodes.emplace_back(
-    // std::make_shared<NoDependencyNode>("filter_node", "/topic1", "/topic2"));
+  // nodes.emplace_back(std::make_shared<ActuatorDummy>("actuator_dummy_node", "/topic4"));
   nodes.emplace_back(
-    std::make_shared<SubDependencyNode>("message_driven_node", "/topic2", "/drive", "/topic3"));
+    std::make_shared<NoDependencyNode>("filter_node", "/topic1", "/topic2"));
   // nodes.emplace_back(
-    // std::make_shared<TimerDependencyNode>("timer_driven_node", "/topic3", "/topic4", 100)); // 10Hz
-  nodes.emplace_back(std::make_shared<SensorDummy>("sensor_dummy_node", "/topic1", 100)); // 10Hz
-  // nodes.emplace_back(std::make_shared<SensorDummy>("drive_node", "/drive", 100)); // 10Hz
+    // std::make_shared<SubDependencyNode>("message_driven_node", "/topic2", "/drive", "/topic3"));
+  nodes.emplace_back(
+    std::make_shared<TimerDependencyNode>("timer_driven_node", "/topic3", "/topic4", 100)); // 10Hz
+  // nodes.emplace_back(std::make_shared<SensorDummy>("sensor_dummy_node", "/topic1", 100)); // 10Hz
+  nodes.emplace_back(std::make_shared<SensorDummy>("drive_node", "/drive", 100)); // 10Hz
 
   for (auto & node : nodes) {
     executor->add_node(node);

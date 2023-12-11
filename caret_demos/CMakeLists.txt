@@ -13,12 +13,17 @@ add_executable(end_to_end_sample
   src/end_to_end_sample.cpp)
 ament_target_dependencies(end_to_end_sample rclcpp sensor_msgs)
 
+add_executable(end_to_end_sample2
+  src/end_to_end_sample2.cpp)
+ament_target_dependencies(end_to_end_sample2 rclcpp sensor_msgs)
+
 add_executable(relay
   src/relay.cpp)
 ament_target_dependencies(relay rclcpp sensor_msgs)
 
 install(TARGETS
   end_to_end_sample
+  end_to_end_sample2
   relay
   DESTINATION lib/${PROJECT_NAME})
 
